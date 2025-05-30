@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.egg-info/
+
+# VSCode y PyCharm
+.vscode/
+.idea/
+
+# Docker
+**/data/
+**/__pycache__/
+**/logs/
+**/.env
+**/.env.*
+
+# Tests
+.coverage
+pytest_cache/
+htmlcov/
+
+# Global ignores
+.DS_Store
+*.swp
+*.bak
