@@ -1,0 +1,3 @@
+infra/ representa infraestructura pasiva/configurable: certificados, reglas de firewall, YAMLs de Terraform, etc. pensada para scripts, claves, secretos, configuraciones externas.
+
+Esto se diferencia de net/ que representa servicios activos, como api_gateway, auth_proxy, webhook_ingress, etc.
