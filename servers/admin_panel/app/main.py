@@ -1,28 +1,33 @@
-from fastapi import FastAPI, HTTPException
-from app.routers.config import router as config_router
+# servers/admin_panel/app/main.py
+
+from fastapi import FastAPI
 from app.kafka_producer import (
     init_kafka_producer,
-    test_kafka_connection,
+    publish_config_update,
     KAFKA_BOOTSTRAP_SERVERS,
     KAFKA_TOPIC,
 )
+from config.env_loader import load_config_for
+from app.routers.config import router as config_router
 
 app = FastAPI(title="admin_panel")
+
+SERVICES = [
+    "config-file-service",
+    "config-search-service",
+]  # o cargalo dinámico si querés
 
 
 @app.on_event("startup")
 def startup_event():
-    """
-    Al iniciar, levantamos el Producer y verificamos que el topic exista.
-    Si Kafka no está disponible o el topic no se creó aún, solo se imprime el error.
-    """
     try:
         init_kafka_producer()
-        test_kafka_connection()
+        for service in SERVICES:
+            config = load_config_for(service)
+            publish_config_update(service=service, version=1, payload=config)
+            print(f"[INFO] Configuración enviada a '{service}'")
     except Exception as e:
-        print(
-            f"[WARNING] No se pudo conectar a Kafka o crear topic '{KAFKA_TOPIC}': {e}"
-        )
+        print(f"[WARNING] Error al publicar configuraciones: {e}")
 
 
 app.include_router(config_router, prefix="/config", tags=["config"])

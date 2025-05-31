@@ -7,7 +7,7 @@ class ConfigPayload(BaseModel):
     payload: Dict[str, str]
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "version": 2,
                 "payload": {

@@ -6,7 +6,7 @@ import os
 # VARIABLES DE KAFKA
 # Se leen de entorno si están definidas, sino usamos valores por defecto:
 KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
-KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "config_update")
+KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "configUpdate")
 
 producer: Producer | None = None
 
@@ -38,13 +38,12 @@ def test_kafka_connection():
 
 def publish_config_update(service: str, version: int, payload: dict):
     """
-    Publica un evento de configuración para 'service' con una versión y payload.
-    :param service: nombre del microservicio (ej: "file_service")
-    :param version: número incremental de versión
-    :param payload: diccionario { "VAR1": "valor1", ... }
+    Publica un evento de configuración para 'service' en su topic privado.
     """
     if producer is None:
         raise RuntimeError("Producer de Kafka no inicializado")
+
+    topic = f"config-{service.replace('_', '-')}"  # seguridad extra
 
     message = {
         "service": service,
@@ -54,9 +53,8 @@ def publish_config_update(service: str, version: int, payload: dict):
     }
 
     producer.produce(
-        topic=KAFKA_TOPIC,
+        topic=topic,
         key=service.encode("utf-8"),
         value=json.dumps(message).encode("utf-8"),
     )
-    # Podemos hacer poll para procesar callbacks, o flush si queremos sincrónico
     producer.poll(0)

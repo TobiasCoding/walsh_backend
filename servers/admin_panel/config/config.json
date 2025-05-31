@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "description": "Configuration for the Admin Panel",
+  "global": {
+    "KAFKA_BOOTSTRAP": "kafka:9092"
+  },
+  "file_service": {
+    "FILE_BASE_PATH": "/data/files",
+    "FILE_PUBLIC_URL": "http://localhost:8004/files",
+    "MAX_UPLOAD_MB": "100",
+    "KAFKA_TOPIC": "file_stored"
+  },
+  "search_service": {
+    "INDEX_NAME": "documents",
+    "TIMEOUT": "5"
+  },
+  "shared_kv_store": {
+    "REDIS_URL": "redis://redis:6379"
+  }
+}

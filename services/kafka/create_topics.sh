@@ -4,14 +4,15 @@ set -e
 
 COMPOSE_FILE="services/kafka/docker-compose.yml"
 TOPICS=(
-  configUpdate
+  config-file-service
+  config-search-service
   logs
-  fileStored
-  rawDocuments
-  documentEnriched
-  userCreated
-  keyRegistered
-  chatMessage
+  file-stored
+  raw-documents
+  document-enriched
+  user-created
+  key-registered
+  chat-message
 )
 
 docker compose -f "$COMPOSE_FILE" exec broker bash -c '

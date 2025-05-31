@@ -10,7 +10,7 @@ class ConfigUpdate(BaseModel):
     timestamp: datetime
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "service": "file_service",
                 "version": 1,
