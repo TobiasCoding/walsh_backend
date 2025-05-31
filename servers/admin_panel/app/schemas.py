@@ -13,7 +13,7 @@ class ConfigPayload(BaseModel):
                 "payload": {
                     "FILE_BASE_PATH": "/data/files",
                     "KAFKA_BOOTSTRAP": "kafka:9092",
-                    "KAFKA_TOPIC": "file_stored",
+                    "KAFKA_TOPIC": "file-storage-service",
                     "MAX_UPLOAD_MB": "100",
                 },
             }

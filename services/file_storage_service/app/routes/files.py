@@ -8,17 +8,14 @@ from mimetypes import guess_type
 import aiofiles, os
 from app.models import FileMeta
 from app.storage.local import LocalFSBackend
-from app.events import publish_file_stored_event
+from app.events import publish_file_storage_event
 from secrets import token_hex
 from datetime import datetime
 from secrets import token_hex
-from config.variables.file_storage import settings
-
-producer = Producer({"bootstrap.servers": settings.KAFKA_BOOTSTRAP})
-
+from app.config.settings import settings
 
 router = APIRouter()
-storage = LocalFSBackend(FILE_BASE_PATH)
+storage = LocalFSBackend(settings.FILE_BASE_PATH)
 
 
 def generar_clave_archivo(
@@ -47,7 +44,7 @@ async def upload_file(request: Request, file: UploadFile = File(...)):
     extension = os.path.splitext(file.filename or "")[1].lower()
 
     try:
-        key = generar_clave_archivo(origen, extension, FILE_BASE_PATH)
+        key = generar_clave_archivo(origen, extension, settings.FILE_BASE_PATH)
         storage.save_file(key, content)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al guardar archivo: {e}")
@@ -56,16 +53,16 @@ async def upload_file(request: Request, file: UploadFile = File(...)):
     meta = FileMeta(
         user_id=user_id, tags=[], sha256=hash_hex, created_at=datetime.utcnow()
     )
-    publish_file_stored_event(key, meta)
+    publish_file_storage_event(key, meta)
 
-    url = f"{FILE_PUBLIC_URL}/{key}"
+    url = f"{settings.FILE_PUBLIC_URL}/{key}"
     return {"key": key, "url": url}
 
 
 @router.get("/files/{key}")
 async def get_file(key: str):
     try:
-        path = os.path.join(FILE_BASE_PATH, key)
+        path = os.path.join(settings.FILE_BASE_PATH, key)
         if not os.path.exists(path):
             raise HTTPException(status_code=404, detail="Archivo no encontrado")
 
@@ -84,7 +81,7 @@ async def get_file(key: str):
 
 @router.head("/files/{key}")
 async def head_file(key: str):
-    path = os.path.join(FILE_BASE_PATH, key)
+    path = os.path.join(settings.FILE_BASE_PATH, key)
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
 
@@ -101,7 +98,7 @@ async def head_file(key: str):
 
 @router.delete("/files/{key}")
 async def delete_file(key: str):
-    path = os.path.join(FILE_BASE_PATH, key)
+    path = os.path.join(settings.FILE_BASE_PATH, key)
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
     try:

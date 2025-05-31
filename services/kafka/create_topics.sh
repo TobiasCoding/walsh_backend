@@ -4,15 +4,28 @@ set -e
 
 COMPOSE_FILE="services/kafka/docker-compose.yml"
 TOPICS=(
-  config-file-service
-  config-search-service
   logs
-  file-stored
-  raw-documents
-  document-enriched
-  user-created
-  key-registered
-  chat-message
+  config-logs
+  file-storage-service
+  config-file-storage-service
+  search-service
+  config-search-service
+  user-service
+  config-user-service
+  app-server
+  config-app-server
+  admin-panel
+  config-admin-panel
+  gpu-server
+  config-gpu-server
+  api-worker
+  config-api-worker
+  crawler-worker
+  config-crawler-worker
+  enrichment-worker
+  config-enrichment-worker
+  structured-worker
+  config-structured-worker
 )
 
 docker compose -f "$COMPOSE_FILE" exec broker bash -c '

@@ -1,16 +1,10 @@
 version: '3.8'
 
 services:
-  file_service:
+  file_storage_service:
     build: .
     ports:
       - "8004:8004"
-    environment:
-      - FILE_BASE_PATH=/data/files
-      - FILE_PUBLIC_URL=http://localhost:8004/files
-      - KAFKA_BOOTSTRAP=kafka:9092
-      - KAFKA_TOPIC=file_stored
-      - MAX_UPLOAD_MB=50
     volumes:
       - ./data/files:/data/files
     depends_on:

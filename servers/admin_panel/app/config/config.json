@@ -4,11 +4,26 @@
   "global": {
     "KAFKA_BOOTSTRAP": "kafka:9092"
   },
-  "file_service": {
+  "file_storage_service": {
     "FILE_BASE_PATH": "/data/files",
     "FILE_PUBLIC_URL": "http://localhost:8004/files",
     "MAX_UPLOAD_MB": "100",
-    "KAFKA_TOPIC": "file_stored"
+    "KAFKA_TOPIC": "file-storage-service",
+    "ENABLE_CLAMAV": true,
+    "ALLOWED_EXTENSIONS": [
+      ".pdf",
+      ".txt",
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".docx",
+      ".xlsx",
+      ".csv",
+      ".json",
+      ".html",
+      ".xml",
+      ".zip"
+    ]
   },
   "search_service": {
     "INDEX_NAME": "documents",
