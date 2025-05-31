@@ -1,3 +1,6 @@
+# Para dumps
+dev_docs/
+
 # Python
 __pycache__/
 *.pyc
