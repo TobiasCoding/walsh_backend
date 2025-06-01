@@ -1,4 +1,4 @@
-# app/routes/files.py
+# app/routes/save.py
 
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request
 from fastapi.responses import StreamingResponse, Response
@@ -12,10 +12,9 @@ from app.events import publish_file_storage_event
 from secrets import token_hex
 from datetime import datetime
 from secrets import token_hex
-from app.config.settings import settings
+from app.common.config_store import settings
 
 router = APIRouter()
-storage = LocalFSBackend(settings.FILE_BASE_PATH)
 
 
 def generar_clave_archivo(
@@ -24,7 +23,7 @@ def generar_clave_archivo(
     fecha = datetime.now(timezone.utc).strftime("%Y%m%d")
     hora_min = datetime.now(timezone.utc).strftime("%H%M")
     for _ in range(max_reintentos):
-        short_id = token_hex(3)  # 6 caracteres
+        short_id = token_hex(15)  # el doble del numero indicado, de caracteres
         nombre_archivo = f"{hora_min}-{short_id}{extension}"
         clave = f"{origen}/{fecha}/{nombre_archivo}"
         ruta = os.path.join(base_path, clave)
@@ -35,8 +34,9 @@ def generar_clave_archivo(
     )
 
 
-@router.post("/files")
+@router.post("/save")
 async def upload_file(request: Request, file: UploadFile = File(...)):
+    storage = LocalFSBackend(settings.FILE_BASE_PATH)
     user_id = request.headers.get("x-user-id", "anonymous")
     origen = request.headers.get("x-source", "unknown")  # microservicio llamante
     content = await file.read()
@@ -51,7 +51,7 @@ async def upload_file(request: Request, file: UploadFile = File(...)):
 
     hash_hex = sha256(content).hexdigest()
     meta = FileMeta(
-        user_id=user_id, tags=[], sha256=hash_hex, created_at=datetime.utcnow()
+        user_id=user_id, tags=[], sha256=hash_hex, created_at=datetime.now(timezone.utc)
     )
     publish_file_storage_event(key, meta)
 
@@ -59,7 +59,7 @@ async def upload_file(request: Request, file: UploadFile = File(...)):
     return {"key": key, "url": url}
 
 
-@router.get("/files/{key}")
+@router.get("/save/{key:path}")
 async def get_file(key: str):
     try:
         path = os.path.join(settings.FILE_BASE_PATH, key)
@@ -79,7 +79,7 @@ async def get_file(key: str):
         raise HTTPException(status_code=500, detail=f"Error al leer archivo: {e}")
 
 
-@router.head("/files/{key}")
+@router.head("/save/{key:path}")
 async def head_file(key: str):
     path = os.path.join(settings.FILE_BASE_PATH, key)
     if not os.path.exists(path):
@@ -96,7 +96,7 @@ async def head_file(key: str):
     return Response(headers=headers)
 
 
-@router.delete("/files/{key}")
+@router.delete("/save/{key:path}")
 async def delete_file(key: str):
     path = os.path.join(settings.FILE_BASE_PATH, key)
     if not os.path.exists(path):

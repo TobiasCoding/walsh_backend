@@ -5,8 +5,8 @@
     "KAFKA_BOOTSTRAP": "kafka:9092"
   },
   "file_storage_service": {
-    "FILE_BASE_PATH": "/data/files",
-    "FILE_PUBLIC_URL": "http://localhost:8004/files",
+    "FILE_BASE_PATH": "storage/files",
+    "FILE_PUBLIC_URL": "http://localhost:8004/save",
     "MAX_UPLOAD_MB": "100",
     "KAFKA_TOPIC": "file-storage-service",
     "ENABLE_CLAMAV": true,
